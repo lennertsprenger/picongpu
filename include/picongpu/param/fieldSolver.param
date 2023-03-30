@@ -43,6 +43,8 @@ namespace picongpu
          * Field Solver Selection (note <> for some solvers), all in namespace maxwellSolver:
          *  - Yee : Standard Yee solver approximating derivatives with respect to time and
          * space by second order finite differences.
+         *  - CCK<>: Cowan-Cole-Karkkainen Solver, Dispersion free solver in the direction of the smallest
+         *  grid size (has to be the y-direction, CELL_HEIGHT<=CELL WIDTH && CELL_HEIGHT<=CELL_DEPTH)
          *  - Lehe<>: Num. Cherenkov free field solver in a chosen direction
          *  - ArbitraryOrderFDTD<4>: Solver using 4 neighbors to each direction to approximate
          * *spatial* derivatives by finite differences. The number of neighbors can be changed from 4 to any positive,
