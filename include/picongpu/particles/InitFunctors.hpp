@@ -1,4 +1,4 @@
-/* Copyright 2014-2023 Rene Widera, Sergei Bastrakov
+/* Copyright 2014-2023 Rene Widera, Sergei Bastrakov, Lennert Sprenger
  *
  * This file is part of PIConGPU.
  *
@@ -23,6 +23,7 @@
 
 #include "picongpu/fields/Fields.def"
 #include "picongpu/particles/Manipulate.hpp"
+#include "picongpu/particles/PoissonSolverImpl.hpp"
 #include "picongpu/particles/densityProfiles/IProfile.def"
 #include "picongpu/particles/filter/filter.def"
 #include "picongpu/particles/manipulators/manipulators.def"
@@ -274,6 +275,20 @@ namespace picongpu
         // Less or Equal
         template<uint32_t T_timeStep, typename T_Functor>
         using ExecuteIfTimeStepLe = detail::ExecuteIfTimeStep<T_timeStep, T_Functor, std::less_equal<uint32_t>>;
+
+
+        template<uint32_t numIterations>
+        struct PoissonSolver
+        {
+            HINLINE void operator()(const uint32_t currentStep)
+            {
+                PoissonSolverImpl{}(currentStep, numIterations);
+            }
+        };
+
+        template<uint32_t numIterations>
+        // using SolvePoisson = ExecuteIfTimeStepGe<0u, PoissonSolver<numIterations>>;
+        using SolvePoisson = ExecuteIfTimeStepLe<10000u, PoissonSolver<numIterations>>;
 
         /** @} */
     } // namespace particles
