@@ -287,7 +287,8 @@ namespace picongpu
         };
 
         template<uint32_t numIterations>
-        using SolvePoisson = ExecuteIfTimeStepEq<0u, PoissonSolver<numIterations>>;
+        // using SolvePoisson = ExecuteIfTimeStepGe<0u, PoissonSolver<numIterations>>;
+        using SolvePoisson = ExecuteIfTimeStepLe<5u, PoissonSolver<numIterations>>;
 
         /** @} */
     } // namespace particles
