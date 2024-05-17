@@ -82,7 +82,7 @@ namespace picongpu::particles
             fieldTmpNumSlots >= 1u + requiredExtraSlots);
 
         auto fieldTmp = dc.get<FieldTmp>(FieldTmp::getUniqueId(0));
-        auto fieldTmp2 = dc.get<FieldTmp>(FieldTmp::getUniqueId(1));
+        // auto fieldTmp2 = dc.get<FieldTmp>(FieldTmp::getUniqueId(1));
 
         auto currentBackground
             = dc.get<simulation::stage::CurrentBackground>(simulation::stage::CurrentBackground::getName());
@@ -109,11 +109,9 @@ namespace picongpu::particles
         PMACC_LOCKSTEP_KERNEL(Stencil{}, workerCfg)
             (coreMapper.getGridDim())(
 
-                fieldJ->getGridBuffer().getDeviceBuffer().getDataBox(),
+                fieldE->getGridBuffer().getDeviceBuffer().getDataBox(),
                 currentStep,
                 coreMapper);
-
-        fieldJ->synchronize();
         
         // MappingDesc cellDescription = fieldTmp->getCellDescription();
         

@@ -67,29 +67,15 @@ struct Stencil
 
         constexpr uint32_t cellsPerSuperCell = pmacc::math::CT::volume<SuperCellSize>::type::value;
 
-        // use the cached buffer, beacuse I am doing multiple reads, moves the blockArea to shared memory
-        // auto cache = pmacc::CachedBox::create<0, Type>(worker, BlockArea());
-        // auto buff_shifted = boxRead.shift(blockCell);
-
-        // // the thread collective is a convenience wrapper for lockstep make for each
-        // // it deals with the guard offset, subtracts the origin offset
-        // auto collective = pmacc::makeThreadCollective<BlockArea>();
-
-        // pmacc::math::operation::Assign assign;
-        // collective(worker, assign, cache, buff_shifted);
-
-        // worker.sync();
-
         pmacc::lockstep::makeForEach<cellsPerSuperCell>(worker)(
             [&](int32_t const linearIdx)
             {
         //         // cell index within the superCell
                 pmacc::DataSpace<DIM3> const cellIdx = pmacc::math::mapToND(SuperCellSize::toRT(), linearIdx);
                 auto pos = cellIdx + blockCell;
-                
-                if (pos.x() == 32 && pos.y() == 32) {
-                    double value = currentStep;
-                    field(pos) = {0, 0, 1.0e10};
+                if (pos.x() == 330 && pos.y() == 330) {
+                    double value = pmacc::math::sin(currentStep * 0.4);
+                    field(pos) = {0, 0, value};
                 }
 
             });
