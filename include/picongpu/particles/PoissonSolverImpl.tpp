@@ -106,9 +106,15 @@ namespace picongpu::particles
         ComputeChargeDensity<pmacc::mp_int<CORE + BORDER>> computeChargeDensity;
         computeChargeDensity(fieldTmp.get(), currentStep);
 
+        printf("coreMapper.getGridDim() %u %u %u\n", coreMapper.getGridDim().x(), coreMapper.getGridDim().y(), coreMapper.getGridDim().z());
+        
+        // using BlockArea = SuperCellDescription<
+        //     typename MappingDesc::SuperCellSize,
+        //     typename pmacc::math::CT::make_Int<simDim, 0>,
+        //     typename pmacc::math::CT::make_Int<simDim, 0>>;
+
         PMACC_LOCKSTEP_KERNEL(Stencil{}, workerCfg)
             (coreMapper.getGridDim())(
-
                 fieldE->getGridBuffer().getDeviceBuffer().getDataBox(),
                 currentStep,
                 coreMapper);
