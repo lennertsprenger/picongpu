@@ -34,7 +34,7 @@
 #include <iostream>
 
 namespace picongpu::particles
-
+{
     void PoissonSolverImpl::operator()(uint32_t currentStep, uint32_t iterations)
     {
         std::cout << "start PoissonSolverImpl " << currentStep << " for " << iterations << " iterations."
@@ -80,11 +80,11 @@ namespace picongpu::particles
 
         printf("mapper.getGridDim() %u %u %u\n", mapper.getGridDim().x(), mapper.getGridDim().y(), mapper.getGridDim().z());
  
-        PMACC_LOCKSTEP_KERNEL(Stencil<BlockArea>{})
-            .config(mapper.getGridDim(), SuperCellSize{})(
-                fieldE->getGridBuffer().getDeviceBuffer().getDataBox(),
-                currentStep,
-                mapper);
+        // PMACC_LOCKSTEP_KERNEL(Stencil{})
+        //     .config(mapper.getGridDim(), SuperCellSize{})(
+        //         fieldE->getGridBuffer().getDeviceBuffer().getDataBox(),
+        //         currentStep,
+        //         mapper);
 
         std::cout << "end PoissonSolverImpl" << std::endl;
     }

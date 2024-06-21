@@ -36,7 +36,7 @@ namespace picongpu {
         UP = 3u,
         DOWN = 6u
     };
-    template<typename T_BlockDescription>
+    // template<typename T_BlockDescription>
     struct Stencil
     {
         const std::array<uint32_t, 4> stencilDirections{LEFT, RIGHT, UP, DOWN};
