@@ -36,7 +36,7 @@ namespace picongpu {
         UP = 3u,
         DOWN = 6u
     };
-
+    template<typename T_BlockDescription>
     struct Stencil
     {
         const std::array<uint32_t, 4> stencilDirections{LEFT, RIGHT, UP, DOWN};
@@ -55,35 +55,37 @@ namespace picongpu {
             uint32_t currentStep,
             const T_Mapping& mapper) const
         {
+
+            // using BlockDomSizeND = pmacc::math::CT::UInt32<42>;
+            // constexpr uint32_t blockDomSize = BlockDomSizeND::x::value; //T_Worker::blockDomSize();
             using SuperCellSize = typename T_Mapping::SuperCellSize;
             constexpr uint32_t cellsPerSuperCell = pmacc::math::CT::volume<SuperCellSize>::type::value;
 
             // get position in grid in units of SuperCells from blockID
-            // pmacc::DataSpace<simDim> const block(mapper.getSuperCellIndex(pmacc::DataSpace<simDim>(worker.blockDomIdxND())));
-            pmacc::DataSpace<DIM3> const block(
-                mapper.getSuperCellIndex(pmacc::DataSpace<DIM3>(pmacc::device::getBlockIdx(worker.getAcc()))));
+            pmacc::DataSpace<simDim> const block(mapper.getSuperCellIndex(pmacc::DataSpace<simDim>(worker.blockDomIdxND())));
+            // pmacc::DataSpace<DIM3> const block(
+            //     mapper.getSuperCellIndex(pmacc::DataSpace<DIM3>(pmacc::device::getBlockIdx(worker.getAcc()))));
 
             // convert position in unit of cells
             pmacc::DataSpace<simDim> const blockCell = block * SuperCellSize::toRT();
 
             printf("kernel: %u - %u %u %u %u %u %u\n", cellsPerSuperCell, blockCell.x(), blockCell.y(), blockCell.z(), block.x(), block.y(), block.z());
-
         
             // pmacc::DataSpace<DIM3> const blockCell = block * T_Mapping::SuperCellSize::toRT();
 
             // const DataSpace<simDim> superCellIdx(mapper.getSuperCellIndex(worker.blockDomIdxND()));
 
-            // pmacc::lockstep::makeForEach<cellsPerSuperCell>(worker)(
-            //     [&](int32_t const linearIdx)
-            //     {
+            pmacc::lockstep::makeForEach<cellsPerSuperCell>(worker)(
+                [&](int32_t const linearIdx)
+                {
             //         // cell index within the superCell
             //         pmacc::DataSpace<DIM3> const cellIdxInSupercell = pmacc::math::mapToND(SuperCellSize::toRT(), linearIdx);
             //         pmacc::DataSpace<DIM3> const cell(superCellIdx * SuperCellSize::toRT() + cellIdxInSupercell);
             //         // auto pos = cellIdx + blockCell;
-            //         // double value = pmacc::math::sin(currentStep * 0.4);
+                    double value = pmacc::math::sin(currentStep * 0.4);
             //         // pmacc::DataSpace<DIM3> const posLeft = pmacc::DataSpace<DIM3>(8, 8, 8);
             //         field(cell) = {cell.x(), cell.y(), cell.y()};
-            //     });
+                });
 
         };
     };
