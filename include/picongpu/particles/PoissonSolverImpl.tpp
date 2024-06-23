@@ -26,7 +26,7 @@
 #include "picongpu/particles/particleToGrid/derivedAttributes/ChargeDensity.hpp"
 #include "picongpu/particles/particleToGrid/CombinedDerive.def"
 #include "picongpu/plugins/openPMD/openPMDWriter.hpp"
-#include "picongpu/particles/Stencil.tpp"
+#include "picongpu/particles/Stencil.kernel"
 
 #include <pmacc/dataManagement/DataConnector.hpp>
 
@@ -68,7 +68,7 @@ namespace picongpu::particles
         auto speciesTmp = dc.get<PIC_Electrons>(PIC_Electrons::FrameType::getName());
 
         MappingDesc cellDescription = fieldE->getCellDescription();
-        auto mapper = makeStrideAreaMapper<CORE, 3>(cellDescription);
+        auto mapper = makeAreaMapper<CORE+BORDER>(cellDescription);
         
         // ComputeChargeDensity<pmacc::mp_int<CORE + BORDER>> computeChargeDensity;
         // computeChargeDensity(fieldTmp.get(), currentStep);
@@ -80,12 +80,12 @@ namespace picongpu::particles
 
         printf("mapper.getGridDim() %u %u %u\n", mapper.getGridDim().x(), mapper.getGridDim().y(), mapper.getGridDim().z());
  
-        // PMACC_LOCKSTEP_KERNEL(Stencil{})
-        //     .config(mapper.getGridDim(), SuperCellSize{})(
-        //         fieldE->getGridBuffer().getDeviceBuffer().getDataBox(),
-        //         currentStep,
-        //         mapper);
+        PMACC_LOCKSTEP_KERNEL(Stencil{})
+            .config(mapper.getGridDim(), SuperCellSize{})(
+                fieldE->getGridBuffer().getDeviceBuffer().getDataBox(),
+                currentStep,
+                mapper);
 
-        std::cout << "end PoissonSolverImpl" << std::endl;
+        std::cout << "end PoissonSolverImpl\n\n\n" << std::endl;
     }
 } // namespace picongpu::particles
